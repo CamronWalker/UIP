@@ -1,2 +1,2 @@
-# Excel Template
+# UIP Template
 
