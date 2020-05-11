@@ -7,7 +7,7 @@ Sub UpdatePowerBIExportFolderPath()
     
     Set fldr = Application.FileDialog(msoFileDialogFolderPicker)
     With fldr
-        .Title = "Select Power BI Folder"
+        .Title = "Select Power BI OneDrive Folder"
         .AllowMultiSelect = False
         .InitialFileName = Application.DefaultFilePath
         If .Show <> -1 Then GoTo NextCode
