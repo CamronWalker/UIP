@@ -1,9 +1,10 @@
 Attribute VB_Name = "ImportExport"
 ' https://www.rondebruin.nl/win/s9/win002.htm
 '
-' REQUIRES:
+' REQUIRES: (Goto Tools > References)
 ' Microsoft Visual Basic For Applications Extensibility 5.3
 ' Microsoft Scripting Runtime
+'
 
 Public Sub ExportModules()
     Dim bExport As Boolean
