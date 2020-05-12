@@ -10,11 +10,15 @@ Sub UpdatePowerBIExportFolderPath()
         .Title = "Select Power BI OneDrive Folder"
         .AllowMultiSelect = False
         .InitialFileName = Application.DefaultFilePath
-        If .Show <> -1 Then GoTo NextCode
+        If .Show <> -1 Then
+            AddLog ("Export Folder Update Cancelled")
+            GoTo NextCode
+        End If
         sItem = .SelectedItems(1)
     End With
     
     Range("Power_BI_Export_Folder").Value = sItem
+    AddLog ("Power BI Export Folder Updated: " & sItem)
 NextCode:
     GetFolder = sItem
     Set fldr = Nothing
