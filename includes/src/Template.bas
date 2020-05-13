@@ -113,6 +113,7 @@ Function FolderWithVBAProjectFiles() As String
 End Function
 
 Sub AddLog(LogEntry As String)
+    ' Camron 2020-05-12
     Dim filesys, filetxt
     Dim logFileName As String: logFileName = Left(ActiveWorkbook.Name, Len(ActiveWorkbook.Name) - 5)
     If Range("Logging").Value = True Then
