@@ -52,7 +52,7 @@ Sub AddColumnsOutputTable()
     
     '=[@[WP_A1]]+[@[WP_A2]]+[@[WP_A3]]
     ' output formulas preface
-    PrimaryAreas_Formula = "="
+    PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
     WeeklyPlan_Formula = "="
     WeeklyActual_Formula = "="
     
@@ -62,12 +62,11 @@ Sub AddColumnsOutputTable()
         OutputTable.ListColumns.Add.Name = "WP_" & r2
         OutputTable.ListColumns.Add.Name = "WA_" & r2
         
-        PrimaryAreas_Formula = "="
         WeeklyPlan_Formula = WeeklyPlan_Formula & "[@[WP_" & r2 & "]]+"
         WeeklyActual_Formula = WeeklyActual_Formula & "[@[WA_" & r2 & "]]+"
-        
-        
     Next r2
+
+    
     ' finish output formulas
     WeeklyPlan_Formula = Left(WeeklyPlan_Formula, Len(WeeklyPlan_Formula) - 1)
     WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
@@ -78,21 +77,23 @@ Sub AddColumnsOutputTable()
     
 End Sub
 
-Function PrimaryAreas(numberOfColumns As Long)
-    'Dim numberOfColumns As Long: numberOfColumns = 3
+Function PrimaryAreas(numberOfAreas As Long)
+    'Dim numberOfAreas As Long: numberOfAreas = 3
     Application.Volatile
     
     Dim tb As ListObject
     Dim outputBuilder As Variant
     Set tb = ActiveSheet.ListObjects("Output_" & Range("S2").Value)
     Dim i As Long, listCol As Long
-    listCol = 7
+    listCol = 7 ' This is the first column you need to check for
     
-    For i = 1 To numberOfColumns
-        outputBuilder = outputBuilder + Right(tb.ListColumns(listCol).Name, Len(tb.ListColumns(listCol).Name) - 3) & ","
-        listCol = listCol + 2
+    For i = 1 To numberOfAreas
+        If Application.Caller.Offset(0, listCol - 2).Value <> "" Then ' change to active cell if you want to run it manually to test
+            outputBuilder = outputBuilder + Right(tb.ListColumns(listCol).Name, Len(tb.ListColumns(listCol).Name) - 3) & ", "
+        End If
+        listCol = listCol + 2 ' This is how I get it to go every other
     Next i
     
-    outputBuilder = Left(outputBuilder, Len(outputBuilder) - 1)
+    If outputBuilder <> "" Then outputBuilder = Left(outputBuilder, Len(outputBuilder) - 2)
     PrimaryAreas = outputBuilder
 End Function
