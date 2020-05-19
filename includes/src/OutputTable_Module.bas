@@ -83,7 +83,7 @@ Function PrimaryAreas(numberOfAreas As Long)
     
     Dim tb As ListObject
     Dim outputBuilder As Variant
-    Set tb = ActiveSheet.ListObjects("Output_" & Range("S2").Value)
+    Set tb = Application.Caller.Worksheet.ListObjects("Output_" & Application.Caller.Worksheet.Range("S2").Value)
     Dim i As Long, listCol As Long
     listCol = 7 ' This is the first column you need to check for
     
