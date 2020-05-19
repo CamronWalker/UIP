@@ -7,6 +7,9 @@ Sub AddColumnsOutputTable()
     Dim r1, r2
     Dim dict As Scripting.Dictionary
     Set dict = New Dictionary
+    Dim PrimaryAreas_Formula As String
+    Dim WeeklyPlan_Formula As String
+    Dim WeeklyActual_Formula As String
     
     Dim OutputTable As ListObject
     Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
@@ -47,16 +50,49 @@ Sub AddColumnsOutputTable()
         Exit Sub
     End If
     
-    ' Add output table columns
+    '=[@[WP_A1]]+[@[WP_A2]]+[@[WP_A3]]
+    ' output formulas preface
+    PrimaryAreas_Formula = "="
+    WeeklyPlan_Formula = "="
+    WeeklyActual_Formula = "="
+    
+    
+    ' Add output table columns & continue building output formulas
     For Each r2 In InputTable.ListColumns("Short Description").DataBodyRange
         OutputTable.ListColumns.Add.Name = "WP_" & r2
         OutputTable.ListColumns.Add.Name = "WA_" & r2
         
+        PrimaryAreas_Formula = "="
+        WeeklyPlan_Formula = WeeklyPlan_Formula & "[@[WP_" & r2 & "]]+"
+        WeeklyActual_Formula = WeeklyActual_Formula & "[@[WA_" & r2 & "]]+"
+        
+        
     Next r2
-    ' update output table formulas
+    ' finish output formulas
+    WeeklyPlan_Formula = Left(WeeklyPlan_Formula, Len(WeeklyPlan_Formula) - 1)
+    WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
     
     ' resize number of output rows (should probably be a different maco
-        
+    
     
     
 End Sub
+
+Function PrimaryAreas(numberOfColumns As Long)
+    'Dim numberOfColumns As Long: numberOfColumns = 3
+    Application.Volatile
+    
+    Dim tb As ListObject
+    Dim outputBuilder As Variant
+    Set tb = ActiveSheet.ListObjects("Output_" & Range("S2").Value)
+    Dim i As Long, listCol As Long
+    listCol = 7
+    
+    For i = 1 To numberOfColumns
+        outputBuilder = outputBuilder + Right(tb.ListColumns(listCol).Name, Len(tb.ListColumns(listCol).Name) - 3) & ","
+        listCol = listCol + 2
+    Next i
+    
+    outputBuilder = Left(outputBuilder, Len(outputBuilder) - 1)
+    PrimaryAreas = outputBuilder
+End Function
