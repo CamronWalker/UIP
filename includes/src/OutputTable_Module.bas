@@ -109,7 +109,7 @@ Sub ResizeOutputTable()
         For i = 0 To NumRowsToAdd
             OutputTable.ListRows.Add
         Next i
-        AddLog (NumRowsToAdd + 1 & " rows added to the OutputTable.")
+        AddLog (NumRowsToAdd + 1 & " rows added to the OutputTable on sheet " & CurrentSheetName)
     End If
     If NumRowsToAdd < 0 Then
         For i = 0 To NumRowsToDelete
