@@ -4,12 +4,13 @@ Sub AddColumnsOutputTable()
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
     AddLog ("Starting AddColumnsOutputTable Macro on " & CurrentSheetName)
     Dim e1, e2, e3, e4
-    Dim r1, r2
+    Dim r1, r2, r3, r4, r5
     Dim dict As Scripting.Dictionary
     Set dict = New Dictionary
     Dim PrimaryAreas_Formula As String
     Dim WeeklyPlan_Formula As String
     Dim WeeklyActual_Formula As String
+    Dim WeeklyActual_Alt As String
     
     Dim OutputTable As ListObject
     Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
@@ -54,7 +55,7 @@ Sub AddColumnsOutputTable()
     ' output formulas preface
     PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
     WeeklyPlan_Formula = "="
-    WeeklyActual_Formula = "="
+    WeeklyActual_Formula = ""
     
     
     ' Add output table columns & continue building output formulas
@@ -63,18 +64,60 @@ Sub AddColumnsOutputTable()
         OutputTable.ListColumns.Add.Name = "WA_" & r2
         
         WeeklyPlan_Formula = WeeklyPlan_Formula & "[@[WP_" & r2 & "]]+"
-        WeeklyActual_Formula = WeeklyActual_Formula & "[@[WA_" & r2 & "]]+"
+        WeeklyActual_Formula = WeeklyActual_Formula & "+[@[WA_" & r2 & "]]"
     Next r2
-
     
     ' finish output formulas
     WeeklyPlan_Formula = Left(WeeklyPlan_Formula, Len(WeeklyPlan_Formula) - 1)
-    WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
+    WeeklyActual_Alt = Replace(WeeklyActual_Formula, "+", "),ISBLANK(")
+    WeeklyActual_Alt = Right(WeeklyActual_Alt, Len(WeeklyActual_Alt) - 2) & ")"
+    WeeklyActual_Formula = Right(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
+    WeeklyActual_Formula = "=IF(AND(" & WeeklyActual_Alt & "), """"" & ", " & WeeklyActual_Formula & ")"
     
-    ' resize number of output rows (should probably be a different maco
+    ' resize number of output rows should probably be a different macro
+    ResizeOutputTable
     
+    ' apply formulas
+    For Each r3 In OutputTable.ListColumns("Primary Areas").DataBodyRange
+        r3.Formula = PrimaryAreas_Formula
+    Next r3
+    For Each r4 In OutputTable.ListColumns("Weekly Plan").DataBodyRange
+        r4.Formula = WeeklyPlan_Formula
+    Next r4
+    For Each r5 In OutputTable.ListColumns("Weekly Actual").DataBodyRange
+        r5.Formula = WeeklyActual_Formula
+    Next r5
     
+    AddLog ("OutputTable Output_" & CurrentSheetName & " initialized.")
+End Sub
+
+Sub ResizeOutputTable()
+    Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Dim FirstReportDate As String: FirstReportDate = Range("S4").Value
+    Dim LastReportDate As String: LastReportDate = Range("S5").Value
+    Dim weekDifference As Long: weekDifference = DateDiff("d", FirstReportDate, LastReportDate) / 7
+    Dim OutputTable As ListObject
+    Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
+    ' Dim InputTable As ListObject
+    ' Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    Dim NumRowsToAdd As Long: NumRowsToAdd = weekDifference - OutputTable.ListColumns(1).DataBodyRange.Count
+    Dim NumRowsToDelete As Long: NumRowsToDelete = Abs(weekDifference - OutputTable.ListColumns(1).DataBodyRange.Count + 2)
+    Dim i As Long
+    Dim lastrow As Long
     
+    If NumRowsToAdd >= 0 Then
+        For i = 0 To NumRowsToAdd
+            OutputTable.ListRows.Add
+        Next i
+        AddLog (NumRowsToAdd + 1 & " rows added to the OutputTable.")
+    End If
+    If NumRowsToAdd < 0 Then
+        For i = 0 To NumRowsToDelete
+            lastrow = OutputTable.Range.Rows.Count - 1
+            OutputTable.ListRows(lastrow).Delete
+        Next i
+        AddLog (NumRowsToDelete + 1 & " rows deleted from the OutputTable on sheet " & CurrentSheetName)
+    End If
 End Sub
 
 Function PrimaryAreas(numberOfAreas As Long)
