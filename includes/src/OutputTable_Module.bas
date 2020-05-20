@@ -119,6 +119,60 @@ Sub ResizeOutputTable()
         AddLog (NumRowsToDelete + 1 & " rows deleted from the OutputTable on sheet " & CurrentSheetName)
     End If
 End Sub
+Function WeeklyPlanned() 'ColumnHeader As String, RowDate As Date)
+     Dim ColumnHeader As String: ColumnHeader = "WP_A1"
+     Dim RowDate As Date: RowDate = "2020-03-17"
+    '
+    ' Written By Camron 2020-05-20
+    ''''''''''''''''''''''''''''''''''''''''''''''
+    Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Dim OutputTable As ListObject
+    Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
+    Dim InputTable As ListObject
+    Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    Dim HolidayTable As ListObject
+    Set HolidayTable = Sheets("Settings").ListObjects("Holidays_Table")
+    Dim reportArea As String: reportArea = Right(ColumnHeader, Len(ColumnHeader) - 3)
+    Dim InputTable_DataRow As Variant
+    Dim DataRow_DateDiff As Variant
+    Dim d_Counter As Long
+    Dim loopDate As Date
+    Dim loopHolidayResult
+    Dim workDaysArray As Variant: workDaysArray = Sheets(CurrentSheetName).Range("U2:U8").Value
+    Dim d As Variant
+    Dim loopDayOfWeek As Long
+    Dim loopWorkingDaysCounter As Long
+    
+    
+    InputTable_DataRow = Application.Match(reportArea, ActiveSheet.Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
+    DataRow_DateDiff = DateDiff("d", InputTable.DataBodyRange(InputTable_DataRow, 4), InputTable.DataBodyRange(InputTable_DataRow, 5))
+    
+    loopDate = InputTable.DataBodyRange(InputTable_DataRow, 4)
+    loopWorkingDaysCounter = 0
+    For d_Counter = 1 To DataRow_DateDiff
+        loopHolidayResult = Application.Match(loopDate, Range("Holidays_Table[Holidays]").Value, 0)
+        If IsError(loopHolidayResult) Then
+            loopDayOfWeek = Application.WorksheetFunction.Weekday(loopDate, 2)
+            If workDaysArray(loopDayOfWeek, 1) = True Then
+                loopWorkingDaysCounter = loopWorkingDaysCounter + 1
+            End If
+        End If
+        loopDate = loopDate + 1
+        loopDayOfWeek = 0
+    Next d_Counter
+
+End Function
+
+Function GetRow(TableName As String, ColumnNum As Long, Key As Variant) As Range
+    ' https://stackoverflow.com/questions/6249039/find-a-row-from-excel-table-using-vba
+    On Error Resume Next
+    Set GetRow = Range(TableName) _
+        .Rows(WorksheetFunction.Match(Key, Range(TableName).Columns(ColumnNum), 0))
+    If Err.Number <> 0 Then
+        Err.Clear
+        Set GetRow = Nothing
+    End If
+End Function
 
 Function PrimaryAreas(numberOfAreas As Long)
     'Dim numberOfAreas As Long: numberOfAreas = 3
