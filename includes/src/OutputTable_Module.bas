@@ -111,7 +111,7 @@ Sub ResizeOutputTable()
         Next i
         AddLog (NumRowsToAdd + 1 & " rows added to the OutputTable on sheet " & CurrentSheetName)
     End If
-    If NumRowsToAdd < 0 Then
+    If NumRowsToAdd < -1 Then
         For i = 0 To NumRowsToDelete
             lastrow = OutputTable.Range.Rows.Count - 1
             OutputTable.ListRows(lastrow).Delete
