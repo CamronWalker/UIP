@@ -120,16 +120,17 @@ Sub ResizeOutputTable()
     End If
 End Sub
 Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
-    'Dim ColumnHeader As String: ColumnHeader = "WP_A1"
-    'Dim RowDate As Date: RowDate = "2020-03-17"
+    'Dim ColumnHeader As String: ColumnHeader = Range("AG13").Value
+    'Dim RowDate As Date: RowDate = Range("AA14").Value
     '
     ' Written By Camron 2020-05-20
     ''''''''''''''''''''''''''''''''''''''''''''''
-    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Range("S2").Value
+    Application.Volatile
+    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Parent.Name 'Change ActiveSheet.Range("S2").Value
     Dim OutputTable As ListObject
-    Set OutputTable = Application.Caller.Worksheet.ListObjects("Output_" & CurrentSheetName) ' ActiveSheet.ListObjects("Output_" & CurrentSheetName)
+    Set OutputTable = Sheets(CurrentSheetName).ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
-    Set InputTable = Application.Caller.Worksheet.ListObjects("Input_" & CurrentSheetName) ' ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    Set InputTable = Sheets(CurrentSheetName).ListObjects("Input_" & CurrentSheetName)
     Dim HolidayTable As ListObject
     Set HolidayTable = Sheets("Settings").ListObjects("Holidays_Table")
     Dim reportArea As String: reportArea = Right(ColumnHeader, Len(ColumnHeader) - 3)
@@ -147,7 +148,7 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
     Dim dailyProductionValue As Double
     Dim daysThisWeekCounter As Long
     
-    InputTable_DataRow = Application.Match(reportArea, Application.Caller.Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
+    InputTable_DataRow = Application.Match(reportArea, Sheets(CurrentSheetName).Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
     DataRow_DateDiff = DateDiff("d", InputTable.DataBodyRange(InputTable_DataRow, 4), InputTable.DataBodyRange(InputTable_DataRow, 5))
     
     loopDate = InputTable.DataBodyRange(InputTable_DataRow, 4)
@@ -163,7 +164,6 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
         loopDate = loopDate + 1
         loopDayOfWeek = 0
     Next d_Counter
-    
     weekLoopDate = RowDate - 7
     dailyProductionValue = InputTable.DataBodyRange(InputTable_DataRow, 6) / loopWorkingDaysCounter ' 6 for total row
     
@@ -181,7 +181,12 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
         weekLoopDate = weekLoopDate + 1
     Next i
     
-    WeeklyPlanned = daysThisWeekCounter * dailyProductionValue
+    If daysThisWeekCounter * dailyProductionValue = 0 Then
+        WeeklyPlanned = ""
+    Else
+        WeeklyPlanned = daysThisWeekCounter * dailyProductionValue
+    End If
+    
 End Function
 
 Function GetRow(TableName As String, ColumnNum As Long, Key As Variant) As Range
@@ -214,4 +219,10 @@ Function PrimaryAreas(numberOfAreas As Long)
     
     If outputBuilder <> "" Then outputBuilder = Left(outputBuilder, Len(outputBuilder) - 2)
     PrimaryAreas = outputBuilder
+End Function
+Function testfunction()
+    Application.Volatile
+    
+    testfunction = Application.Caller.Address
+
 End Function
