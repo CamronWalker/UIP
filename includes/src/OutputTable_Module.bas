@@ -53,6 +53,7 @@ Sub AddColumnsOutputTable()
     
     '=[@[WP_A1]]+[@[WP_A2]]+[@[WP_A3]]
     ' output formulas preface
+    ' TODO UPDATE FORMULAS TO MAKE THE DIFFERENT TABLE COLUMN VALUES A COLLECTION SO I CAN MAKE AN IF STATEMENT OUT OF THEM
     PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
     WeeklyPlan_Formula = "="
     WeeklyActual_Formula = ""
@@ -121,12 +122,12 @@ Sub ResizeOutputTable()
 End Sub
 Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
     'Dim ColumnHeader As String: ColumnHeader = Range("AG13").Value
-    'Dim RowDate As Date: RowDate = Range("AA14").Value
+    'Dim RowDate As Date: RowDate = Range("AA24").Value
     '
     ' Written By Camron 2020-05-20
     ''''''''''''''''''''''''''''''''''''''''''''''
     Application.Volatile
-    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Parent.Name 'Change ActiveSheet.Range("S2").Value
+    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Parent.Name 'ActiveSheet.Range("S2").Value '
     Dim OutputTable As ListObject
     Set OutputTable = Sheets(CurrentSheetName).ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
@@ -171,7 +172,7 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
     For i = 1 To 7
         If weekLoopDate >= InputTable.DataBodyRange(InputTable_DataRow, 4) And weekLoopDate <= InputTable.DataBodyRange(InputTable_DataRow, 5) Then
             weekLoopHolidayResult = Application.Match(weekLoopDate, Range("Holidays_Table[Holidays]").Value, 0)
-            If IsError(loopHolidayResult) Then ' if there's an error it's not found on the holiday list
+            If IsError(weekLoopHolidayResult) Then ' if there's an error it's not found on the holiday list
                 weekLoopDayOfWeek = Application.WorksheetFunction.Weekday(weekLoopDate, 2)
                 If workDaysArray(weekLoopDayOfWeek, 1) = True Then
                     daysThisWeekCounter = daysThisWeekCounter + 1
