@@ -119,17 +119,17 @@ Sub ResizeOutputTable()
         AddLog (NumRowsToDelete + 1 & " rows deleted from the OutputTable on sheet " & CurrentSheetName)
     End If
 End Sub
-Function WeeklyPlanned() 'ColumnHeader As String, RowDate As Date)
-     Dim ColumnHeader As String: ColumnHeader = "WP_A1"
-     Dim RowDate As Date: RowDate = "2020-03-17"
+Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
+    'Dim ColumnHeader As String: ColumnHeader = "WP_A1"
+    'Dim RowDate As Date: RowDate = "2020-03-17"
     '
     ' Written By Camron 2020-05-20
     ''''''''''''''''''''''''''''''''''''''''''''''
-    Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Range("S2").Value
     Dim OutputTable As ListObject
-    Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
+    Set OutputTable = Application.Caller.Worksheet.ListObjects("Output_" & CurrentSheetName) ' ActiveSheet.ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
-    Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    Set InputTable = Application.Caller.Worksheet.ListObjects("Input_" & CurrentSheetName) ' ActiveSheet.ListObjects("Input_" & CurrentSheetName)
     Dim HolidayTable As ListObject
     Set HolidayTable = Sheets("Settings").ListObjects("Holidays_Table")
     Dim reportArea As String: reportArea = Right(ColumnHeader, Len(ColumnHeader) - 3)
@@ -137,19 +137,22 @@ Function WeeklyPlanned() 'ColumnHeader As String, RowDate As Date)
     Dim DataRow_DateDiff As Variant
     Dim d_Counter As Long
     Dim loopDate As Date
-    Dim loopHolidayResult
+    Dim loopHolidayResult, weekLoopHolidayResult
     Dim workDaysArray As Variant: workDaysArray = Sheets(CurrentSheetName).Range("U2:U8").Value
     Dim d As Variant
-    Dim loopDayOfWeek As Long
+    Dim loopDayOfWeek As Long, weekLoopDayOfWeek As Long
     Dim loopWorkingDaysCounter As Long
+    Dim weekLoopDate As Date
+    Dim i As Long
+    Dim dailyProductionValue As Double
+    Dim daysThisWeekCounter As Long
     
-    
-    InputTable_DataRow = Application.Match(reportArea, ActiveSheet.Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
+    InputTable_DataRow = Application.Match(reportArea, Application.Caller.Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
     DataRow_DateDiff = DateDiff("d", InputTable.DataBodyRange(InputTable_DataRow, 4), InputTable.DataBodyRange(InputTable_DataRow, 5))
     
     loopDate = InputTable.DataBodyRange(InputTable_DataRow, 4)
     loopWorkingDaysCounter = 0
-    For d_Counter = 1 To DataRow_DateDiff
+    For d_Counter = 0 To DataRow_DateDiff
         loopHolidayResult = Application.Match(loopDate, Range("Holidays_Table[Holidays]").Value, 0)
         If IsError(loopHolidayResult) Then
             loopDayOfWeek = Application.WorksheetFunction.Weekday(loopDate, 2)
@@ -160,7 +163,25 @@ Function WeeklyPlanned() 'ColumnHeader As String, RowDate As Date)
         loopDate = loopDate + 1
         loopDayOfWeek = 0
     Next d_Counter
-
+    
+    weekLoopDate = RowDate - 7
+    dailyProductionValue = InputTable.DataBodyRange(InputTable_DataRow, 6) / loopWorkingDaysCounter ' 6 for total row
+    
+    daysThisWeekCounter = 0
+    For i = 1 To 7
+        If weekLoopDate >= InputTable.DataBodyRange(InputTable_DataRow, 4) And weekLoopDate <= InputTable.DataBodyRange(InputTable_DataRow, 5) Then
+            weekLoopHolidayResult = Application.Match(weekLoopDate, Range("Holidays_Table[Holidays]").Value, 0)
+            If IsError(loopHolidayResult) Then ' if there's an error it's not found on the holiday list
+                weekLoopDayOfWeek = Application.WorksheetFunction.Weekday(weekLoopDate, 2)
+                If workDaysArray(weekLoopDayOfWeek, 1) = True Then
+                    daysThisWeekCounter = daysThisWeekCounter + 1
+                End If
+            End If
+        End If
+        weekLoopDate = weekLoopDate + 1
+    Next i
+    
+    WeeklyPlanned = daysThisWeekCounter * dailyProductionValue
 End Function
 
 Function GetRow(TableName As String, ColumnNum As Long, Key As Variant) As Range
