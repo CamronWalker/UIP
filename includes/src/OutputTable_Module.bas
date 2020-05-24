@@ -6,6 +6,7 @@ Sub AddColumnsOutputTable()
     AddLog ("Starting AddColumnsOutputTable Macro on " & CurrentSheetName)
     Dim e1, e2, e3, e4
     Dim r1, r2, r3, r4, r5, r6, r7, r8
+    Dim r7_Counter As Long, r8_Counter As Long
     Dim itwc, itwc2
     Dim dict As Scripting.Dictionary
     Set dict = New Dictionary
@@ -100,11 +101,15 @@ Sub AddColumnsOutputTable()
             r6.Formula = "=WeeklyPlanned(Output_" & CurrentSheetName & "[[#Headers],[WP_" & InputTable_WeeklyColumns(itwc2) & "]], [@Date])"
         Next r6
     Next itwc2
+    r7_Counter = 14
     For Each r7 In OutputTable.ListColumns("Accumulated Plan").DataBodyRange
-        r7.Formula = "=SUM($AC$14:AC" & Application.Caller.Row & ")"
+        r7.Formula = "=SUM($AC$14:AC" & r7_Counter & ")"
+        r7_Counter = r7_Counter + 1
     Next r7
+    r8_Counter = 14
     For Each r8 In OutputTable.ListColumns("Accumulated Actual").DataBodyRange
-        r8.Formula = "=IF(AD" & Application.Caller.Row & "="""",NA(),SUM($AD$14:AD" & Application.Caller.Row & "))"
+        r8.Formula = "=IF(AD" & r8_Counter & "=0,NA(),SUM($AD$14:AD" & r8_Counter & "))"
+        r8_Counter = r8_Counter + 1
     Next r8
     
     AddLog ("OutputTable Output_" & CurrentSheetName & " initialized.")
