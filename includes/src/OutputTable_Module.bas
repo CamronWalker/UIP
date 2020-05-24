@@ -1,10 +1,12 @@
 Attribute VB_Name = "OutputTable_Module"
 Option Explicit
 Sub AddColumnsOutputTable()
+    Application.ScreenUpdating = False
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
     AddLog ("Starting AddColumnsOutputTable Macro on " & CurrentSheetName)
     Dim e1, e2, e3, e4
-    Dim r1, r2, r3, r4, r5
+    Dim r1, r2, r3, r4, r5, r6, r7, r8
+    Dim itwc, itwc2
     Dim dict As Scripting.Dictionary
     Set dict = New Dictionary
     Dim PrimaryAreas_Formula As String
@@ -16,6 +18,9 @@ Sub AddColumnsOutputTable()
     Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
     Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    
+    Dim InputTable_WeeklyColumns As Collection
+    Set InputTable_WeeklyColumns = New Collection
    
     ' Check if macro has been run before
     If OutputTable.ListColumns.Count <> 6 Then
@@ -51,29 +56,29 @@ Sub AddColumnsOutputTable()
         Exit Sub
     End If
     
-    '=[@[WP_A1]]+[@[WP_A2]]+[@[WP_A3]]
-    ' output formulas preface
+    '=IF([@[WP_A1]]="", 0,[@[WP_A1]]) +IF([@[WP_A2]]="", 0,[@[WP_A2]])+IF([@[WP_A3]]="", 0,[@[WP_A3]])
     ' TODO UPDATE FORMULAS TO MAKE THE DIFFERENT TABLE COLUMN VALUES A COLLECTION SO I CAN MAKE AN IF STATEMENT OUT OF THEM
-    PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
-    WeeklyPlan_Formula = "="
-    WeeklyActual_Formula = ""
-    
-    
+
     ' Add output table columns & continue building output formulas
     For Each r2 In InputTable.ListColumns("Short Description").DataBodyRange
         OutputTable.ListColumns.Add.Name = "WP_" & r2
         OutputTable.ListColumns.Add.Name = "WA_" & r2
         
-        WeeklyPlan_Formula = WeeklyPlan_Formula & "[@[WP_" & r2 & "]]+"
-        WeeklyActual_Formula = WeeklyActual_Formula & "+[@[WA_" & r2 & "]]"
+        InputTable_WeeklyColumns.Add r2.Value
     Next r2
     
-    ' finish output formulas
+    ' output formulas
+    PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
+    
+    WeeklyPlan_Formula = "="
+    WeeklyActual_Formula = "="
+    For itwc = 1 To InputTable_WeeklyColumns.Count
+        WeeklyPlan_Formula = WeeklyPlan_Formula & "IF([@[WP_" & InputTable_WeeklyColumns(itwc) & "]]="""", 0, [@[WP_" & InputTable_WeeklyColumns(itwc) & "]])+"
+        WeeklyActual_Formula = WeeklyActual_Formula & "IF([@[WA_" & InputTable_WeeklyColumns(itwc) & "]]="""", 0, [@[WA_" & InputTable_WeeklyColumns(itwc) & "]])+"
+    Next itwc
+    
     WeeklyPlan_Formula = Left(WeeklyPlan_Formula, Len(WeeklyPlan_Formula) - 1)
-    WeeklyActual_Alt = Replace(WeeklyActual_Formula, "+", "),ISBLANK(")
-    WeeklyActual_Alt = Right(WeeklyActual_Alt, Len(WeeklyActual_Alt) - 2) & ")"
-    WeeklyActual_Formula = Right(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
-    WeeklyActual_Formula = "=IF(AND(" & WeeklyActual_Alt & "), """"" & ", " & WeeklyActual_Formula & ")"
+    WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
     
     ' resize number of output rows should probably be a different macro
     ResizeOutputTable
@@ -88,6 +93,19 @@ Sub AddColumnsOutputTable()
     For Each r5 In OutputTable.ListColumns("Weekly Actual").DataBodyRange
         r5.Formula = WeeklyActual_Formula
     Next r5
+    ' =WeeklyPlanned(Output_Template[[#Headers],[WP_A1]], [@Date])
+    For itwc2 = 1 To InputTable_WeeklyColumns.Count
+        r6 = Null
+        For Each r6 In OutputTable.ListColumns("WP_" & InputTable_WeeklyColumns(itwc2)).DataBodyRange
+            r6.Formula = "=WeeklyPlanned(Output_" & CurrentSheetName & "[[#Headers],[WP_" & InputTable_WeeklyColumns(itwc2) & "]], [@Date])"
+        Next r6
+    Next itwc2
+    For Each r7 In OutputTable.ListColumns("Accumulated Plan").DataBodyRange
+        r7.Formula = "=SUM($AC$14:AC" & Application.Caller.Row & ")"
+    Next r7
+    For Each r8 In OutputTable.ListColumns("Accumulated Actual").DataBodyRange
+        r8.Formula = "=IF(AD" & Application.Caller.Row & "="""",NA(),SUM($AD$14:AD" & Application.Caller.Row & "))"
+    Next r8
     
     AddLog ("OutputTable Output_" & CurrentSheetName & " initialized.")
 End Sub
