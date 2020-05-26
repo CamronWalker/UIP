@@ -25,7 +25,7 @@ Sub AddColumnsOutputTable()
    
     ' Check if macro has been run before
     If OutputTable.ListColumns.Count <> 6 Then
-        e2 = MsgBox("You can only initilize the sheet once. If you need to add an area you will have to create a new trade sheet, copy over the areas and info on the blue table, initilize that worksheet then copy over any actual production to the gray table.", vbExclamation)
+        e2 = MsgBox("You can only initilize the sheet once. If you need to add an area you will have to create a new trade sheet, copy over the areas and info on the colored table, initilize that worksheet then copy over any actual production to the gray table.", vbExclamation)
         AddLog ("ListColumns.Count = " & OutputTable.ListColumns.Count & ".  It should equal 6. Exiting Sub.")
         Exit Sub
     End If
