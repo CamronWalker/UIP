@@ -246,19 +246,30 @@ Function PrimaryAreas(numberOfAreas As Long)
 End Function
 
 Sub UpdateTrade()
+    Application.ScreenUpdating = False
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Dim CurrentReportDate As Date: CurrentReportDate = Range("S3").Value
+    
+    AddLog ("Start Trade update on " & CurrentSheetName)
     
     Dim OutputTable As ListObject
     Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
     Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
     
-    Dim r1 As Long, r2 As Long 'r for row
+    Dim r1 As Long, r2 As Long, r3 As Long 'r for row
     Dim c1 As Long 'c for column
     Dim loopShortDescription As String
     Dim loopColumnHeaders As String
-    Dim loopInputTableTotal As Double
+    Dim loopOutputTableTotal As Double
+    Dim loopProductionDifference As Double
     
+    'Count Row for current report date
+    For r3 = 1 To OutputTable.DataBodyRange.Rows.Count
+        If OutputTable.DataBodyRange(r3, 1) = CurrentReportDate Then GoTo exitR3loop
+    Next r3
+exitR3loop: ' exit loop with r3 as the row number for the current date
+      
     For r1 = 1 To InputTable.DataBodyRange.Rows.Count
         loopShortDescription = InputTable.DataBodyRange(r1, 3)
         For c1 = 1 To OutputTable.ListColumns.Count
@@ -266,15 +277,22 @@ Sub UpdateTrade()
             If loopColumnHeaders = "WA_" & loopShortDescription Then GoTo exitC1Loop
         Next c1
 exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number of the output table that needs to be updated
+        
+        If OutputTable.DataBodyRange(r3, c1).Value <> "" Then AddLog ("WA_" & loopShortDescription & " already had a value of " & OutputTable.DataBodyRange(r3, c1).Value & " before the trade update. Value Cleared.")
+        OutputTable.DataBodyRange(r3, c1).Value = "" ' remove value from current week's production
+        
         For r2 = 1 To OutputTable.DataBodyRange.Rows.Count
-            loopInputTableTotal = loopInputTableTotal + OutputTable.DataBodyRange(r2, c1).Value
+            loopOutputTableTotal = loopOutputTableTotal + OutputTable.DataBodyRange(r2, c1).Value
         Next r2
         
-        
+        loopProductionDifference = InputTable.DataBodyRange(r1, 7).Value - loopOutputTableTotal
+        If loopProductionDifference < 0 Then AddLog ("There was negative production in area WA_" & loopShortDescription & " = " & loopProductionDifference & ". Production wasn't updated to the negative value because that breaks the graph.")
+        If loopProductionDifference > 0 Then OutputTable.DataBodyRange(r3, c1).Value = loopProductionDifference
         
         ' clear loop values
-        loopInputTableTotal = 0
+        loopProductionDifference = 0
+        loopOutputTableTotal = 0
     Next r1
     
-
+    AddLog ("Finished Trade update on " & CurrentSheetName)
 End Sub
