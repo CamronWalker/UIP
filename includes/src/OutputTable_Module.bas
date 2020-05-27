@@ -150,7 +150,7 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
     ' Written By Camron 2020-05-20
     ''''''''''''''''''''''''''''''''''''''''''''''
     Application.Volatile
-    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Parent.Name 'ActiveSheet.Range("S2").Value '
+    Dim CurrentSheetName As String: CurrentSheetName = Application.Caller.Parent.Name ' ActiveSheet.Range("S2").Value '
     Dim OutputTable As ListObject
     Set OutputTable = Sheets(CurrentSheetName).ListObjects("Output_" & CurrentSheetName)
     Dim InputTable As ListObject
@@ -244,9 +244,37 @@ Function PrimaryAreas(numberOfAreas As Long)
     If outputBuilder <> "" Then outputBuilder = Left(outputBuilder, Len(outputBuilder) - 2)
     PrimaryAreas = outputBuilder
 End Function
-Function testfunction()
-    Application.Volatile
-    
-    testfunction = Application.Caller.Address
 
-End Function
+Sub UpdateTrade()
+    Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    
+    Dim OutputTable As ListObject
+    Set OutputTable = ActiveSheet.ListObjects("Output_" & CurrentSheetName)
+    Dim InputTable As ListObject
+    Set InputTable = ActiveSheet.ListObjects("Input_" & CurrentSheetName)
+    
+    Dim r1 As Long, r2 As Long 'r for row
+    Dim c1 As Long 'c for column
+    Dim loopShortDescription As String
+    Dim loopColumnHeaders As String
+    Dim loopInputTableTotal As Double
+    
+    For r1 = 1 To InputTable.DataBodyRange.Rows.Count
+        loopShortDescription = InputTable.DataBodyRange(r1, 3)
+        For c1 = 1 To OutputTable.ListColumns.Count
+            loopColumnHeaders = OutputTable.HeaderRowRange(1, c1).Value
+            If loopColumnHeaders = "WA_" & loopShortDescription Then GoTo exitC1Loop
+        Next c1
+exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number of the output table that needs to be updated
+        For r2 = 1 To OutputTable.DataBodyRange.Rows.Count
+            loopInputTableTotal = loopInputTableTotal + OutputTable.DataBodyRange(r2, c1).Value
+        Next r2
+        
+        
+        
+        ' clear loop values
+        loopInputTableTotal = 0
+    Next r1
+    
+
+End Sub
