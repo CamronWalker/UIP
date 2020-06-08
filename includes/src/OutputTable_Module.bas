@@ -80,10 +80,12 @@ Sub AddColumnsOutputTable()
                 
     Next itwc
     
-    WeeklyActual_Formula = WeeklyActual_Formula & """, "
+    WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
+    WeeklyActual_Formula = WeeklyActual_Formula & "),"""", "
+    
     
     For itwc3 = 1 To InputTable_WeeklyColumns.Count
-        WeeklyActual_Formula = WeeklyActual_Formula & "[@{WA_" & InputTable_WeeklyColumns(itwc3) & "]]+"
+        WeeklyActual_Formula = WeeklyActual_Formula & "[@[WA_" & InputTable_WeeklyColumns(itwc3) & "]]+"
                 
     Next itwc3
     
