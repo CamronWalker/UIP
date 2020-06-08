@@ -185,7 +185,7 @@ Function WeeklyPlanned(ColumnHeader As String, RowDate As Date)
     Dim dailyProductionValue As Double
     Dim daysThisWeekCounter As Long
     
-    InputTable_DataRow = Application.Match(reportArea, Sheets(CurrentSheetName).Range("Input_Template[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
+    InputTable_DataRow = Application.Match(reportArea, Sheets(CurrentSheetName).Range("Input_" & CurrentSheetName & "[Short Description]").Value, 0) ' use application.caller instead of active sheet when not testing
     DataRow_DateDiff = DateDiff("d", InputTable.DataBodyRange(InputTable_DataRow, 4), InputTable.DataBodyRange(InputTable_DataRow, 5))
     
     loopDate = InputTable.DataBodyRange(InputTable_DataRow, 4)
@@ -309,3 +309,7 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     
     AddLog ("Finished Trade update on " & CurrentSheetName)
 End Sub
+Function testfunction()
+    testfunction = Application.Caller.Parent.Name
+
+End Function
