@@ -7,7 +7,7 @@ Sub AddColumnsOutputTable()
     Dim e1, e2, e3, e4
     Dim r1, r2, r3, r4, r5, r6, r7, r8
     Dim r7_Counter As Long, r8_Counter As Long
-    Dim itwc, itwc2
+    Dim itwc, itwc2, itwc3
     Dim dict As Scripting.Dictionary
     Set dict = New Dictionary
     Dim PrimaryAreas_Formula As String
@@ -69,17 +69,28 @@ Sub AddColumnsOutputTable()
     Next r2
     
     ' output formulas
+        ' =IF(AND(ISBLANK([@[WA_A1]]), ISBLANK([@[WA_A2]]), [@[WA_A3]]),"",[@[WA_A1]]+[@[WA_A2]]+[@[WA_A3]])
     PrimaryAreas_Formula = "=PrimaryAreas(" & InputTable.ListColumns("Short Description").DataBodyRange.Count & ")"
     
     WeeklyPlan_Formula = "="
-    WeeklyActual_Formula = "="
+    WeeklyActual_Formula = "=IF(AND("
     For itwc = 1 To InputTable_WeeklyColumns.Count
         WeeklyPlan_Formula = WeeklyPlan_Formula & "IF([@[WP_" & InputTable_WeeklyColumns(itwc) & "]]="""", 0, [@[WP_" & InputTable_WeeklyColumns(itwc) & "]])+"
-        WeeklyActual_Formula = WeeklyActual_Formula & "IF([@[WA_" & InputTable_WeeklyColumns(itwc) & "]]="""", 0, [@[WA_" & InputTable_WeeklyColumns(itwc) & "]])+"
+        WeeklyActual_Formula = WeeklyActual_Formula & "ISBLANK([@[WA_" & InputTable_WeeklyColumns(itwc) & "]]),"
+                
     Next itwc
+    
+    WeeklyActual_Formula = WeeklyActual_Formula & """, "
+    
+    For itwc3 = 1 To InputTable_WeeklyColumns.Count
+        WeeklyActual_Formula = WeeklyActual_Formula & "[@{WA_" & InputTable_WeeklyColumns(itwc3) & "]]+"
+                
+    Next itwc3
     
     WeeklyPlan_Formula = Left(WeeklyPlan_Formula, Len(WeeklyPlan_Formula) - 1)
     WeeklyActual_Formula = Left(WeeklyActual_Formula, Len(WeeklyActual_Formula) - 1)
+    
+    WeeklyActual_Formula = WeeklyActual_Formula & ")"
     
     ' resize number of output rows should probably be a different macro
     ResizeOutputTable
@@ -108,7 +119,7 @@ Sub AddColumnsOutputTable()
     Next r7
     r8_Counter = 14
     For Each r8 In OutputTable.ListColumns("Accumulated Actual").DataBodyRange
-        r8.Formula = "=IF(AD" & r8_Counter & "=0,NA(),SUM($AD$14:AD" & r8_Counter & "))"
+        r8.Formula = "=IF(AD" & r8_Counter & "="""",NA(),SUM($AD$14:AD" & r8_Counter & "))"
         r8_Counter = r8_Counter + 1
     Next r8
     
