@@ -3,6 +3,7 @@ Option Explicit
 Sub AddColumnsOutputTable()
     Application.ScreenUpdating = False
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Sheets(CurrentSheetName).EnableCalculation = False
     AddLog ("Starting AddColumnsOutputTable Macro on " & CurrentSheetName)
     Dim e1, e2, e3, e4
     Dim r1, r2, r3, r4, r5, r6, r7, r8
@@ -27,6 +28,7 @@ Sub AddColumnsOutputTable()
     If OutputTable.ListColumns.Count <> 6 Then
         e2 = MsgBox("You can only initilize the sheet once. If you need to add an area you will have to create a new trade sheet, copy over the areas and info on the colored table, initilize that worksheet then copy over any actual production to the gray table.", vbExclamation)
         AddLog ("ListColumns.Count = " & OutputTable.ListColumns.Count & ".  It should equal 6. Exiting Sub.")
+        Sheets(CurrentSheetName).EnableCalculation = True
         Exit Sub
     End If
     
@@ -35,6 +37,7 @@ Sub AddColumnsOutputTable()
         If r1 = "" Then
             AddLog ("Blank value in the InputTable. Exiting Sub.")
             e4 = MsgBox("There is a blank short description.  Please fill in each short description with a unique value.", vbExclamation)
+            Sheets(CurrentSheetName).EnableCalculation = True
             Exit Sub
         End If
         If Not dict.Exists(r1.Value) Then
@@ -47,6 +50,7 @@ Sub AddColumnsOutputTable()
     Else
         AddLog ("Short Descriptions are not unique. Exiting Sub. Number of ununique values: " & InputTable.ListColumns("Short Description").DataBodyRange.Count - dict.Count)
         e3 = MsgBox("Your Short Description values aren't unique. Please rename " & InputTable.ListColumns("Short Description").DataBodyRange.Count - dict.Count & " of them and try again.", vbExclamation)
+        Sheets(CurrentSheetName).EnableCalculation = True
         Exit Sub
     End If
 
@@ -54,8 +58,10 @@ Sub AddColumnsOutputTable()
     e1 = MsgBox("The Initilize Sheet Macro can only be run one time." & vbNewLine & vbNewLine & "Please verify that you have included all the areas you want to include or you will need to create a new Trade sheet and start over.", vbOKCancel)
     If e1 = vbCancel Then
         AddLog ("RunOneTime dialog cancelled. Ending Sub.")
+        Sheets(CurrentSheetName).EnableCalculation = True
         Exit Sub
     End If
+    Sheets(CurrentSheetName).Range("AC3").Value = Now
     
     '=IF([@[WP_A1]]="", 0,[@[WP_A1]]) +IF([@[WP_A2]]="", 0,[@[WP_A2]])+IF([@[WP_A3]]="", 0,[@[WP_A3]])
     ' TODO UPDATE FORMULAS TO MAKE THE DIFFERENT TABLE COLUMN VALUES A COLLECTION SO I CAN MAKE AN IF STATEMENT OUT OF THEM
@@ -125,6 +131,8 @@ Sub AddColumnsOutputTable()
         r8_Counter = r8_Counter + 1
     Next r8
     
+    Sheets(CurrentSheetName).Range("AC4").Value = Now
+    Sheets(CurrentSheetName).EnableCalculation = True
     AddLog ("OutputTable Output_" & CurrentSheetName & " initialized.")
 End Sub
 
