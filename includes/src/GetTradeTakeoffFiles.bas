@@ -24,5 +24,3 @@ Sub SelectTradeTakeoffFiles()
     Range("U10").Value = filesString
     'MsgBox "update the range value   ----    " & filesString
 End Sub
-
-

@@ -48,8 +48,8 @@ Attribute Macro3.VB_ProcData.VB_Invoke_Func = " \n14"
         "OLEDB;Provider=Microsoft.Mashup.OleDb.1;Data Source=$Workbook$;Location=Output_0000;Extended Properties=""""" _
         , "SELECT * FROM [Output_0000]", 2
 End Sub
-Sub Macro4()
-Attribute Macro4.VB_ProcData.VB_Invoke_Func = " \n14"
+Sub AddTradeQuery()
+Attribute AddTradeQuery.VB_ProcData.VB_Invoke_Func = " \n14"
 '
 ' Macro4 Macro
 '
