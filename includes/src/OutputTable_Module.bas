@@ -320,4 +320,5 @@ End Sub
 Function testfunction()
     testfunction = Application.Caller.Parent.Name
 
-End Function
+End Sub
+

@@ -135,9 +135,7 @@ Sub AddLog(LogEntry As String)
         End With
     End If
 End Sub
-Sub IDontWorkYet()
-    MsgBox ("This button doesn't work yet.")
-End Sub
+
 ' Procedure : TurnOffFunctionality
 ' Source    : www.ExcelMacroMastery.com
 ' Author    : Paul Kelly
