@@ -12,7 +12,7 @@ Sub Automate_MapQuantities()
         InputTable.DataBodyRange(r1, 6).AddComment "{""QuantityPropertyId"":""Count"",""Filters"":[{""FilterPropertyId"":""ZoneArea_AssembleProperty"",""FilterValues"":[""" & InputTable.DataBodyRange(r1, 2) & """]}]}"
         
         If Not (InputTable.DataBodyRange(r1, 7).Comment Is Nothing) Then InputTable.DataBodyRange(r1, 7).Comment.Delete
-        InputTable.DataBodyRange(r1, 7).AddComment "{""QuantityPropertyId"":""Count"",""Filters"":[{""FilterPropertyId"":""ZoneArea_AssembleProperty"",""FilterValues"":[""" & InputTable.DataBodyRange(r1, 2) & """]},{""FilterPropertyId"":""InstallationStatus_AssembleProperty"",""FilterValues"":[""Completed""]}]}"
+        InputTable.DataBodyRange(r1, 7).AddComment "{""QuantityPropertyId"":""Count"",""Filters"":[{""FilterPropertyId"":""ZoneArea_AssembleProperty"",""FilterValues"":[""" & InputTable.DataBodyRange(r1, 2) & """]},{""FilterPropertyId"":""InstallationStatus2_AssembleProperty"",""FilterValues"":[""Completed""]}]}"
     Next r1
     
     AddLog ("Completed Automate_MapQuantities Macro on " & CurrentSheetName)
