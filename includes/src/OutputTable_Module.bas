@@ -308,7 +308,7 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
         
         loopProductionDifference = InputTable.DataBodyRange(r1, 7).Value - loopOutputTableTotal
         If loopProductionDifference < 0 Then AddLog ("There was negative production in area WA_" & loopShortDescription & " = " & loopProductionDifference & ". Production wasn't updated to the negative value because that breaks the graph.")
-        If loopProductionDifference > 0 Then OutputTable.DataBodyRange(r3, c1).Value = loopProductionDifference
+        If loopProductionDifference >= 0 Then OutputTable.DataBodyRange(r3, c1).Value = loopProductionDifference
         
         ' clear loop values
         loopProductionDifference = 0
