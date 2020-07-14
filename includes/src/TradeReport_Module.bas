@@ -1,7 +1,8 @@
 Attribute VB_Name = "TradeReport_Module"
-''''''''''''''''''
+'''''''''''''''''''''''''''''''
 ' UpdateTrade()
 ' CreateAssembleBackupFile()
+' CreateMergedPDFBackupFile()
 ' MyMkDir(sPath As String)
 ' FileExists(FilePath As String) As Boolean
 
@@ -63,7 +64,7 @@ End Sub
 
 Sub CreateAssembleBackupFile()
     
-    'On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
     Dim nameFilePath As String
     Dim nameFile As String
@@ -93,6 +94,22 @@ ErrorHandler:
     e = MsgBox("Error: " & Err.Number & vbNewLine & vbNewLine & Err.Description, vbExclamation, "Error")
     Err.Clear
 End Sub
+
+Sub CreateMergedPDFBackupFile()
+    'On Error GoTo ErrorHandler
+    Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
+    Dim TakeoffFileLocations As String: TakeoffFileLocations = Range("U10").Value
+    
+    
+    
+    
+    
+ErrorHandler:
+    AddLog ("CreateMergedPDFBackupFile had an error. Error: " & Err.Number & " -- " & Err.Description)
+    e = MsgBox("Error: " & Err.Number & vbNewLine & vbNewLine & Err.Description, vbExclamation, "Error")
+    Err.Clear
+End Sub
+
 Public Sub MyMkDir(sPath As String)
 'https://www.devhut.net/2011/09/15/vba-create-directory-structurecreate-multiple-directories/
 
