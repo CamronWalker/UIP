@@ -28,7 +28,7 @@ Public Sub CombinePDFs(inputPathArray As Variant, outputPath As String, waitOnRe
     Next i
     
     strShell = strShell & " -o """ & outputPath & """ -a flatten --overwrite -b one_entry_each_doc"
-    Debug.Print strShell
+    AddLog (strShell)
     
     wsh.Run strShell, windowStyle, waitOnReturn
     

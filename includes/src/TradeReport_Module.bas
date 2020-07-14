@@ -58,7 +58,10 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     
     'create backup file
     If ReportUpdateMethod = "Assemble Addin" Then CreateAssembleBackupFile
+    If ReportUpdateMethod = "Manual" Or ReportUpdateMethod = "Bluebeam QL" Then CreateMergedPDFBackupFile
     
+    
+    Range("S9").Value = CurrentReportDate
     AddLog ("Finished Trade update on " & CurrentSheetName)
 End Sub
 
