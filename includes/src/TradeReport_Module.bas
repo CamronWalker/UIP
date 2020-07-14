@@ -7,8 +7,8 @@ Sub CreateAssembleBackupFile()
     Dim nameFile As String
     
     assembSheetName = "Assemb_Template"
-    nameFilePath = Application.ActiveWorkbook.Path & "\includes\assets\assemblebackup\" & CurrentSheetName & "\"
-    nameFile = nameFilePath & "AssembleCover_" & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
+    nameFilePath = Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & CurrentSheetName & "\"
+    nameFile = nameFilePath & "TradeBackup_" & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
     
     Sheets("Assemb_Template").Range("A1").Formula = "=UPPER(""" & Sheets(CurrentSheetName).Range("C7").Value & " " & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "mm/dd/yyyy") & """)"
     Sheets("Assemb_Template").Range("A34").Value = Sheets(CurrentSheetName).Range("U9").Value
@@ -16,7 +16,7 @@ Sub CreateAssembleBackupFile()
     MyMkDir (nameFilePath)
     
     If FileExists(nameFile) = True Then
-        AddLog ("AssembleCover_" & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf already exists. Exiting Sub")
+        AddLog ("TradeBackup_" & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf already exists. Exiting Sub")
         Exit Sub
     End If
     
