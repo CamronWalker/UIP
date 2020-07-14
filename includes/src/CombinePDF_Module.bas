@@ -1,5 +1,5 @@
 Attribute VB_Name = "CombinePDF_Module"
-Sub CombinePDFs(inputPathArray As Variant, outputPath As String, waitOnReturn As Boolean)
+Public Sub CombinePDFs(inputPathArray As Variant, outputPath As String, waitOnReturn As Boolean)
     ' This is my trying to adapt the old combinepdfs from
     ' https://www.mrexcel.com/forum/excel-questions/870539-combine-pdfs-using-vba-2.html
     ' and

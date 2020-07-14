@@ -57,7 +57,7 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     Next r1
     
     'create backup file
-    If ReportUpdateMethod = "Assemble Addin" Then a = CreateAssembleBackupFile()
+    If ReportUpdateMethod = "Assemble Addin" Then CreateAssembleBackupFile
     
     AddLog ("Finished Trade update on " & CurrentSheetName)
 End Sub
@@ -80,6 +80,7 @@ Sub CreateAssembleBackupFile()
     
     If FileExists(nameFile) = True Then
         AddLog ("TradeBackup_" & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf already exists. Exiting Sub")
+        ActiveWorkbook.FollowHyperlink nameFile
         Exit Sub
     End If
     
@@ -96,14 +97,22 @@ ErrorHandler:
 End Sub
 
 Sub CreateMergedPDFBackupFile()
-    'On Error GoTo ErrorHandler
+    On Error GoTo ErrorHandler
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
     Dim TakeoffFileLocations As String: TakeoffFileLocations = Range("U10").Value
+    Dim TakeoffFile_Array As Variant
+    Dim nameFilePath As String
+    Dim nameFile As String
     
+    nameFilePath = Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\"
+    nameFile = nameFilePath & CurrentSheetName & "_Backup - " & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
+    TakeoffFile_Array = Split(TakeoffFileLocations, "----")
     
+    MyMkDir (nameFilePath)
     
+    Call CombinePDFs(TakeoffFile_Array, nameFile, False)
     
-    
+    Exit Sub
 ErrorHandler:
     AddLog ("CreateMergedPDFBackupFile had an error. Error: " & Err.Number & " -- " & Err.Description)
     e = MsgBox("Error: " & Err.Number & vbNewLine & vbNewLine & Err.Description, vbExclamation, "Error")
