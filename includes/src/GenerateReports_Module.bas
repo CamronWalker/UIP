@@ -64,7 +64,7 @@ nexttradecheck:
     ' export cover sheet
     reportcoverFolderPath = Application.ActiveWorkbook.Path & "\includes\assets\reportcovers\"
     reportcoverFile = reportcoverFolderPath & Range("Project_Number").Value & " - Report Cover_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
-    MyMkDir (reportmainFolderPath)
+    MyMkDir (reportcoverFolderPath)
     
     ThisWorkbook.Worksheets("Main").ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
         reportcoverFile, Quality:=xlQualityStandard, _
@@ -76,14 +76,22 @@ nexttradecheck:
     ' export main report
     
     For rm = 11 To 250
-        If Cells(sr, 10).Value = "Yes" Then
-            mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(sr, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
-            mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(sr, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+        If Cells(rm, 10).Value = "Yes" Then
+            If FileExists(Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(rm, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf") = True Then
+                mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(rm, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+                Else
+                AddLog ("File Not Found: " & Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(rm, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf")
+            End If
+            If FileExists(Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(rm, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf") = True Then
+                mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(rm, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+                Else
+                AddLog ("File Not Found: " & Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(rm, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf")
+            End If
         End If
     Next rm
     
     mainreportFolderPath = Application.ActiveWorkbook.Path & "\output\Full Reports\"
-    mainreportFile = mainreportFolderPath & Range("Project_Number").Value & " - UIP Full Report_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".xlsx"
+    mainreportFile = mainreportFolderPath & Range("Project_Number").Value & " - UIP Full Report_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
     MyMkDir (mainreportFolderPath)
     
     Call CombinePDFsofCollection(mainReportCollection, mainreportFile, False)
