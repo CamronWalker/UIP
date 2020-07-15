@@ -11,6 +11,8 @@ Sub UpdateTrade()
     Dim CurrentSheetName As String: CurrentSheetName = Range("S2").Value
     Dim CurrentReportDate As Date: CurrentReportDate = Range("S3").Value
     Dim ReportUpdateMethod As String: ReportUpdateMethod = Range("S8").Value
+    Dim nameFilePath As String
+    Dim nameFile As String
     
     AddLog ("Start Trade update on " & CurrentSheetName)
     
@@ -60,6 +62,14 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     If ReportUpdateMethod = "Assemble Addin" Then CreateAssembleBackupFile
     If ReportUpdateMethod = "Manual" Or ReportUpdateMethod = "Bluebeam QL" Then CreateMergedPDFBackupFile
     
+    ' export cover
+    nameFilePath = Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\"
+    nameFile = nameFilePath & CurrentSheetName & "_Cover - " & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
+    
+    ThisWorkbook.Worksheets(CurrentSheetName).ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
+        nameFile, Quality:=xlQualityStandard, _
+        IncludeDocProperties:=True, IgnorePrintAreas:=False, OpenAfterPublish:= _
+        False
     
     Range("S9").Value = CurrentReportDate
     AddLog ("Finished Trade update on " & CurrentSheetName)
