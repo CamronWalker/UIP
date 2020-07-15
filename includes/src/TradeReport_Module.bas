@@ -64,6 +64,7 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     
     ' export cover
     nameFilePath = Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\"
+    'TODO: Verify folder has been created.
     nameFile = nameFilePath & CurrentSheetName & "_Cover - " & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
     
     ThisWorkbook.Worksheets(CurrentSheetName).ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
