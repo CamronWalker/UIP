@@ -7,6 +7,14 @@ Sub GenerateReports()
     Dim uniqueSubsCollection As Collection
     Dim subDocsPathsCollection As Collection
     Set subDocsPathsCollection = New Collection
+    Dim subreportFolderPath As String
+    Dim subreportFile As String
+    Dim reportcoverFolderPath As String
+    Dim reportcoverFile As String
+    Dim mainReportCollection As Collection
+    Set mainReportCollection = New Collection
+    Dim mainreportFolderPath As String
+    Dim mainreportFile As String
         
     ' check if trades are ready
     For rr = 11 To 250
@@ -32,20 +40,54 @@ nexttradecheck:
         For sr = 11 To 250
             If Cells(sr, 3).Value = subcontractor Then
                 If Cells(sr, 10).Value = "Yes" Then
-                    subDocsPathsCollection.Add = Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(sr, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
-                    subDocsPathsCollection.Add = Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(sr, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+                    subDocsPathsCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(sr, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+                    subDocsPathsCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(sr, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
                     
                 End If
             End If
         Next sr
         
-        
+        If Not subDocsPathsCollection Is Nothing Then
+            subreportFolderPath = Application.ActiveWorkbook.Path & "\output\Sub Reports\" & subcontractor & "\"
+            subreportFile = subreportFolderPath & Range("Project_Number").Value & " - UIP " & subcontractor & "_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+            MyMkDir (subreportFolderPath)
+            Call CombinePDFsofCollection(subDocsPathsCollection, subreportFile, False)
+            
+        End If
+        subreportFolderPath = ""
+        subreportFile = ""
+        Set subDocsPathsCollection = Nothing
+        Set subDocsPathsCollection = New Collection
     Next subcontractor
     
+   
+    ' export cover sheet
+    reportcoverFolderPath = Application.ActiveWorkbook.Path & "\includes\assets\reportcovers\"
+    reportcoverFile = reportcoverFolderPath & Range("Project_Number").Value & " - Report Cover_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+    MyMkDir (reportmainFolderPath)
+    
+    ThisWorkbook.Worksheets("Main").ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
+        reportcoverFile, Quality:=xlQualityStandard, _
+        IncludeDocProperties:=True, IgnorePrintAreas:=False, OpenAfterPublish:= _
+        False
         
+    mainReportCollection.Add reportcoverFile
+    
     ' export main report
-
-
+    
+    For rm = 11 To 250
+        If Cells(sr, 10).Value = "Yes" Then
+            mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradecovers\" & Cells(sr, 8).Value & "_Cover - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+            mainReportCollection.Add Application.ActiveWorkbook.Path & "\includes\assets\tradebackup\" & Cells(sr, 8).Value & "_Backup - " & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".pdf"
+        End If
+    Next rm
+    
+    mainreportFolderPath = Application.ActiveWorkbook.Path & "\output\Full Reports\"
+    mainreportFile = mainreportFolderPath & Range("Project_Number").Value & " - UIP Full Report_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".xlsx"
+    MyMkDir (mainreportFolderPath)
+    
+    Call CombinePDFsofCollection(mainReportCollection, mainreportFile, False)
+    
     'save a workbook copy
     excelbackupFolderPath = Application.ActiveWorkbook.Path & "\includes\excelbackup\"
     excelbackupFile = excelbackupFolderPath & Range("Project_Number").Value & " - UIP Excel Backup File_" & WorksheetFunction.Text(CurrentReportDate, "yyyy-mm-dd") & ".xlsx"
