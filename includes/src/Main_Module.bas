@@ -1,5 +1,6 @@
 Attribute VB_Name = "Main_Module"
 Sub Add_New_Trade_Sub()
+    Rows.EntireRow.Hidden = False
     AddNewTrade_Form.Show
     
 End Sub
