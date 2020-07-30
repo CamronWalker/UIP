@@ -4,8 +4,8 @@ Sub Add_New_Trade_Sub()
     
 End Sub
 
-Sub Hide_Unused_Trades()
-    TurnOffFunctionality
+Sub Hide_Unused_Trades(Optional disableWorkbookFunctionality As Boolean = True)
+    If disableWorkbookFunctionality = True Then TurnOffFunctionality
     Dim DivTable_Array As Variant
     DivTable_Array = Sheets("Settings").ListObjects("Divisions_Table").DataBodyRange.Value
     
@@ -18,7 +18,7 @@ Sub Hide_Unused_Trades()
             End If
         End If
     Next i
-    TurnOnFunctionality
+    If disableWorkbookFunctionality = True Then TurnOnFunctionality
 End Sub
 
 Private Function IsInArray(valToBeFound As Variant, arr As Variant) As Boolean
