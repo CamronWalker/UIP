@@ -13,21 +13,21 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Private Sub Create_Button_Click()
+    
+    
+    
+    
+End Sub
 
+Private Sub Cancel_Button_Click()
+    Unload Me
+    End
+End Sub
 
 Private Sub UserForm_Initialize()
     Dim DivTable_Array As Variant
     DivTable_Array = Sheets("Settings").ListObjects("Divisions_Table").DataBodyRange.Value
     Division_ComboBox.List = DivTable_Array
     
-End Sub
-
-
-Private Sub Create_Button_Click()
-
-End Sub
-
-Private Sub Cancel_Button_Click()
-    Unload Me
-    End
 End Sub
