@@ -67,6 +67,8 @@ exitC1Loop: ' I escape the C1 loop with the c1 value which is the column number 
     'TODO: Verify folder has been created.
     nameFile = nameFilePath & CurrentSheetName & "_Cover - " & WorksheetFunction.Text(Sheets(CurrentSheetName).Range("S3").Value, "yyyy-mm-dd") & ".pdf"
     
+    MyMkDir (nameFilePath)
+    
     ThisWorkbook.Worksheets(CurrentSheetName).ExportAsFixedFormat Type:=xlTypePDF, Filename:= _
         nameFile, Quality:=xlQualityStandard, _
         IncludeDocProperties:=True, IgnorePrintAreas:=False, OpenAfterPublish:= _
