@@ -95,11 +95,11 @@ aftericount:
     ' ='0501'!N5
     Cells(tradeRowNumber, 4).Formula = "='" & tradeID & "'!N5"
     ' ='0501'!O5
-    activeworkbCells(tradeRowNumber, 5).Formula = "='" & tradeID & "'!O5"
+    Cells(tradeRowNumber, 5).Formula = "='" & tradeID & "'!O5"
     Cells(tradeRowNumber, 8).NumberFormat = "General"
     Cells(tradeRowNumber, 8).Formula = "=HYPERLINK(" & """#" & tradeID & "!A1""" & ", " & """" & tradeID & """" & ")"
     ' =IF(Report_Date =@ INDIRECT(H16 & "!S9"), "Ready", "Not Ready")
-    Cells(tradeRowNumber, 9).Formula = "=IF(Report_Date =@ INDIRECT(H" & tradeRowNumber & """!S9""" & " ), """ & "Ready""" & ", """ & "Not Ready""" & ")"
+    Cells(tradeRowNumber, 9).Formula = "=IF(Report_Date =@ INDIRECT(""" & "H" & tradeRowNumber & " & !S9""" & " ), """ & "Ready""" & ", """ & "Not Ready""" & ")"
     Cells(tradeRowNumber, 10).Formula = "No"
     Cells(tradeRowNumber, 11).Formula = "No"
     
