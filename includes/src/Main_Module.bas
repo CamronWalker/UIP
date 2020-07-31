@@ -1,11 +1,11 @@
 Attribute VB_Name = "Main_Module"
 Sub Add_New_Trade_Sub()
-    Rows.EntireRow.Hidden = False
     AddNewTrade_Form.Show
     
 End Sub
 
 Sub Hide_Unused_Trades(Optional disableWorkbookFunctionality As Boolean = True)
+    Sheets("Main").Activate
     If disableWorkbookFunctionality = True Then TurnOffFunctionality
     Dim DivTable_Array As Variant
     DivTable_Array = Sheets("Settings").ListObjects("Divisions_Table").DataBodyRange.Value
